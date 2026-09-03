@@ -6,6 +6,7 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
 
     if (!API_KEY || !CHANNEL_ID) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
         return res.status(200).json({
             error: "API Key or Channel ID missing. Using fallback data.",
             stats: { subscriberCount: "100000", viewCount: "5000000", videoCount: "300" },
@@ -43,8 +44,8 @@ export default async function handler(req, res) {
             })).filter(v => v.id);
         }
 
-        // Cache the response on Vercel Edge for 1 hour to prevent API quota limits
-        res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
+        // Disable caching so live updates show up immediately without delay
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.status(200).json({ stats, videos });
     } catch (error) {
         console.error(error);
