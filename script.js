@@ -28,6 +28,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Number counter animation function
+    function animateCount(element, targetVal, duration = 1200) {
+        if (!element) return;
+        const numericTarget = parseInt(String(targetVal).replace(/[^0-9]/g, ''), 10);
+        if (isNaN(numericTarget) || numericTarget === 0) {
+            element.innerText = targetVal;
+            return;
+        }
+
+        const startTime = performance.now();
+
+        function updateCount(currentTime) {
+            const elapsedTime = currentTime - startTime;
+            const progress = Math.min(elapsedTime / duration, 1);
+            
+            // Cubic ease-out
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const currentVal = Math.floor(easeOut * numericTarget);
+
+            let formatted = currentVal.toLocaleString();
+            if (numericTarget >= 1000000) formatted = (currentVal / 1000000).toFixed(1) + 'M';
+            else if (numericTarget >= 1000) formatted = (currentVal / 1000).toFixed(0) + 'K';
+
+            element.innerText = formatted + '+';
+
+            if (progress < 1) {
+                requestAnimationFrame(updateCount);
+            } else {
+                element.innerText = (numericTarget >= 1000000 ? (numericTarget / 1000000).toFixed(1) + 'M' : (numericTarget >= 1000 ? (numericTarget / 1000).toFixed(0) + 'K' : numericTarget.toLocaleString())) + '+';
+                element.classList.add('stat-pop');
+                setTimeout(() => element.classList.remove('stat-pop'), 400);
+            }
+        }
+
+        requestAnimationFrame(updateCount);
+    }
+
     // Intersection Observer for scroll animations
     const observerOptions = {
         threshold: 0.1,
@@ -38,7 +75,17 @@ document.addEventListener('DOMContentLoaded', () => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animate-in');
-                observer.unobserve(entry.target); // Optional: animate only once
+                
+                // Animate stats counting up when stat items come into view
+                if (entry.target.classList.contains('stat-item')) {
+                    const h3 = entry.target.querySelector('h3');
+                    if (h3 && !h3.dataset.animated) {
+                        h3.dataset.animated = 'true';
+                        animateCount(h3, h3.innerText);
+                    }
+                }
+
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
@@ -66,11 +113,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 return n.toLocaleString() + '+';
             };
 
-            // Update Stats
+            // Update Stats with counting animation
             if (data.stats) {
-                if (document.getElementById('stat-subs')) document.getElementById('stat-subs').innerText = formatNum(data.stats.subscriberCount);
-                if (document.getElementById('stat-views')) document.getElementById('stat-views').innerText = formatNum(data.stats.viewCount);
-                if (document.getElementById('stat-clips')) document.getElementById('stat-clips').innerText = formatNum(data.stats.videoCount);
+                const subEl = document.getElementById('stat-subs');
+                const viewEl = document.getElementById('stat-views');
+                const clipEl = document.getElementById('stat-clips');
+
+                if (subEl) animateCount(subEl, data.stats.subscriberCount);
+                if (viewEl) animateCount(viewEl, data.stats.viewCount);
+                if (clipEl) animateCount(clipEl, data.stats.videoCount);
             }
 
             // Update Latest Clip
