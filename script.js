@@ -27,4 +27,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+                observer.unobserve(entry.target); // Optional: animate only once
+            }
+        });
+    }, observerOptions);
+
+    // Observe all sections and cards
+    document.querySelectorAll('section, .video-card, .latest-clip-card, .stat-item, .contact-card').forEach(el => {
+        el.classList.add('animate-hidden');
+        observer.observe(el);
+    });
+
 });
