@@ -1,18 +1,10 @@
 export default async function handler(req, res) {
-    const API_KEY = process.env.YOUTUBE_API_KEY;
-    const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID;
+    const API_KEY = process.env.YOUTUBE_API_KEY || 'AIzaSyC1jYYQ8p0YSKgKRG7xrUavLB_Np_iN5ho';
+    const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCwSdVt7FNixRV5JkmtZZw0A';
 
-    // Set CORS headers just in case
+    // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
-
-    if (!API_KEY || !CHANNEL_ID) {
-        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
-        return res.status(200).json({
-            error: "API Key or Channel ID missing. Using fallback data.",
-            stats: { subscriberCount: "23", viewCount: "687", videoCount: "7" },
-            videos: []
-        });
-    }
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 
     try {
         // Fetch Channel Stats
