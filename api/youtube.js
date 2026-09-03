@@ -37,10 +37,10 @@ export default async function handler(req, res) {
         let videos = [];
         if (videosData.items) {
             videos = videosData.items.map(item => ({
-                id: item.id.videoId,
-                title: item.snippet.title,
-                thumbnail: item.snippet.thumbnails.high.url
-            }));
+                id: item.id ? item.id.videoId : null,
+                title: item.snippet ? item.snippet.title : '',
+                thumbnail: item.snippet && item.snippet.thumbnails && item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : (item.snippet && item.snippet.thumbnails && item.snippet.thumbnails.medium ? item.snippet.thumbnails.medium.url : '')
+            })).filter(v => v.id);
         }
 
         // Cache the response on Vercel Edge for 1 hour to prevent API quota limits

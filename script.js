@@ -59,53 +59,82 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Format numbers nicely
             const formatNum = (num) => {
-                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M+';
-                if (num >= 1000) return (num / 1000).toFixed(0) + 'K+';
-                return num + '+';
+                const n = parseInt(num, 10);
+                if (isNaN(n)) return num || '0';
+                if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M+';
+                if (n >= 1000) return (n / 1000).toFixed(0) + 'K+';
+                return n.toLocaleString() + '+';
             };
 
             // Update Stats
             if (data.stats) {
-                document.getElementById('stat-subs').innerText = formatNum(data.stats.subscriberCount);
-                document.getElementById('stat-views').innerText = formatNum(data.stats.viewCount);
-                document.getElementById('stat-clips').innerText = formatNum(data.stats.videoCount);
+                if (document.getElementById('stat-subs')) document.getElementById('stat-subs').innerText = formatNum(data.stats.subscriberCount);
+                if (document.getElementById('stat-views')) document.getElementById('stat-views').innerText = formatNum(data.stats.viewCount);
+                if (document.getElementById('stat-clips')) document.getElementById('stat-clips').innerText = formatNum(data.stats.videoCount);
             }
 
             // Update Videos
             if (data.videos && data.videos.length > 0) {
                 // Latest Clip
                 const latest = data.videos[0];
-                document.getElementById('latest-thumbnail').innerHTML = `<img src="${latest.thumbnail}" alt="Latest Clip" style="width: 100%; height: 100%; object-fit: cover;">`;
-                document.getElementById('latest-link').href = `https://www.youtube.com/watch?v=${latest.id}`;
-                document.getElementById('latest-link').target = '_blank';
+                const latestThumb = document.getElementById('latest-thumbnail');
+                const latestLink = document.getElementById('latest-link');
+
+                if (latestThumb) {
+                    latestThumb.innerHTML = `
+                        <img src="${latest.thumbnail}" alt="${latest.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
+                            <svg viewBox="0 0 24 24" fill="currentColor" style="width: 65px; height: 65px; color: var(--primary); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    `;
+                }
+                if (latestLink) {
+                    latestLink.href = `https://www.youtube.com/watch?v=${latest.id}`;
+                    latestLink.innerText = `${latest.title || 'Watch Clip'} →`;
+                    latestLink.target = '_blank';
+                }
 
                 // Video Grids
                 const gridVideos = document.getElementById('grid-videos');
                 const gridShorts = document.getElementById('grid-shorts');
                 
-                // Clear existing placeholders
-                gridVideos.innerHTML = '';
-                gridShorts.innerHTML = '';
+                if (gridVideos && data.videos.length > 1) {
+                    gridVideos.innerHTML = '';
+                    data.videos.slice(1, 4).forEach(vid => {
+                        gridVideos.innerHTML += `
+                            <a href="https://www.youtube.com/watch?v=${vid.id}" target="_blank" class="video-card glass-panel" style="text-decoration: none; display: flex; flex-direction: column;">
+                                <div class="video-placeholder placeholder-video" style="position: relative;">
+                                    <img src="${vid.thumbnail}" alt="${vid.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center;">
+                                        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 44px; height: 44px; color: var(--primary); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));"><path d="M8 5v14l11-7z"/></svg>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem; color: var(--text-main); font-weight: 700; font-size: 0.95rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${vid.title}
+                                </div>
+                            </a>
+                        `;
+                    });
+                }
 
-                data.videos.slice(1, 4).forEach(vid => {
-                    gridVideos.innerHTML += `
-                        <a href="https://www.youtube.com/watch?v=${vid.id}" target="_blank" class="video-card glass-panel" style="text-decoration: none; display: block;">
-                            <div class="video-placeholder placeholder-video">
-                                <img src="${vid.thumbnail}" alt="Clip Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
-                            </div>
-                        </a>
-                    `;
-                });
-
-                data.videos.slice(4, 8).forEach(vid => {
-                    gridShorts.innerHTML += `
-                        <a href="https://www.youtube.com/watch?v=${vid.id}" target="_blank" class="video-card glass-panel" style="text-decoration: none; display: block;">
-                            <div class="video-placeholder placeholder-short">
-                                <img src="${vid.thumbnail}" alt="Short Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
-                            </div>
-                        </a>
-                    `;
-                });
+                if (gridShorts && data.videos.length > 4) {
+                    gridShorts.innerHTML = '';
+                    data.videos.slice(4, 8).forEach(vid => {
+                        gridShorts.innerHTML += `
+                            <a href="https://www.youtube.com/watch?v=${vid.id}" target="_blank" class="video-card glass-panel" style="text-decoration: none; display: flex; flex-direction: column;">
+                                <div class="video-placeholder placeholder-short" style="position: relative;">
+                                    <img src="${vid.thumbnail}" alt="${vid.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center;">
+                                        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 44px; height: 44px; color: var(--primary); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));"><path d="M8 5v14l11-7z"/></svg>
+                                    </div>
+                                </div>
+                                <div style="padding: 0.8rem; color: var(--text-main); font-weight: 700; font-size: 0.85rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${vid.title}
+                                </div>
+                            </a>
+                        `;
+                    });
+                }
 
                 // Re-observe new elements
                 document.querySelectorAll('.video-card').forEach(el => {
