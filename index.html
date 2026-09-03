@@ -47,6 +47,12 @@
                     WATCH YOUTUBE
                 </a>
             </div>
+            
+            <div class="server-ip-box" id="copy-ip-btn" title="Click to copy server IP">
+                <span class="online-indicator"></span>
+                <span>SERVER IP: <strong style="color: #fff;">donutsmp.net</strong></span>
+                <span class="copy-badge">COPY IP</span>
+            </div>
         </div>
     </section>
 
@@ -171,6 +177,22 @@
     <footer>
         <p>&copy; 2026 DonutSMP Clips. Not affiliated with DrDonut or Mojang AB.</p>
     </footer>
+
+    <!-- Back to top button -->
+    <button id="back-to-top" class="back-to-top-btn" title="Back to top">&uarr;</button>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notification"></div>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="video-modal">
+        <div class="video-modal-content glass-panel">
+            <button class="modal-close" id="modal-close">&times;</button>
+            <div class="modal-iframe-container">
+                <iframe id="modal-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
