@@ -9,7 +9,7 @@ export default async function handler(req, res) {
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
         return res.status(200).json({
             error: "API Key or Channel ID missing. Using fallback data.",
-            stats: { subscriberCount: "100000", viewCount: "5000000", videoCount: "300" },
+            stats: { subscriberCount: "23", viewCount: "687", videoCount: "7" },
             videos: []
         });
     }
@@ -21,9 +21,9 @@ export default async function handler(req, res) {
         const statsData = await statsRes.json();
         
         let stats = {
-            subscriberCount: "100000",
-            viewCount: "5000000",
-            videoCount: "300"
+            subscriberCount: "23",
+            viewCount: "687",
+            videoCount: "7"
         };
 
         if (statsData.items && statsData.items.length > 0) {
