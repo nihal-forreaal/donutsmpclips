@@ -50,12 +50,12 @@
     <section id="clips" class="latest-clip-section">
         <div class="container">
             <h2 class="section-title">LATEST CLIP</h2>
-            <div class="latest-clip-card glass-panel">
-                <div class="video-placeholder placeholder-latest">
+            <div class="latest-clip-card glass-panel" id="latest-clip-card">
+                <div class="video-placeholder placeholder-latest" id="latest-thumbnail">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                 </div>
                 <div class="latest-info">
-                    <a href="#" class="watch-link">Watch Clip &rarr;</a>
+                    <a href="#" class="watch-link" id="latest-link">Watch Clip &rarr;</a>
                 </div>
             </div>
         </div>
@@ -65,7 +65,7 @@
     <section class="best-clips-section">
         <div class="container">
             <h2 class="section-title">🔥 BEST CLIPS</h2>
-            <div class="video-grid grid-videos">
+            <div class="video-grid grid-videos" id="grid-videos">
                 <div class="video-card glass-panel">
                     <div class="video-placeholder placeholder-video">
                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -84,7 +84,7 @@
             </div>
             
             <h2 class="section-title" style="margin-top: 6rem;">📱 SHORT FORM</h2>
-            <div class="video-grid grid-shorts">
+            <div class="video-grid grid-shorts" id="grid-shorts">
                 <div class="video-card glass-panel">
                     <div class="video-placeholder placeholder-short">
                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -115,15 +115,15 @@
             <h2 class="section-title">📊 CHANNEL STATS</h2>
             <div class="stats-grid glass-panel">
                 <div class="stat-item">
-                    <h3>100K+</h3>
+                    <h3 id="stat-subs">100K+</h3>
                     <p>Subscribers</p>
                 </div>
                 <div class="stat-item">
-                    <h3>5M+</h3>
+                    <h3 id="stat-views">5M+</h3>
                     <p>Views</p>
                 </div>
                 <div class="stat-item">
-                    <h3>300+</h3>
+                    <h3 id="stat-clips">300+</h3>
                     <p>Clips</p>
                 </div>
             </div>
