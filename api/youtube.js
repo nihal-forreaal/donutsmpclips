@@ -50,18 +50,23 @@ export default async function handler(req, res) {
             if (detailsData.items) {
                 const allVideos = detailsData.items.map(item => {
                     const durationSec = parseDuration(item.contentDetails ? item.contentDetails.duration : '');
+                    const isShort = durationSec > 0 && durationSec <= 180;
                     const thumbs = item.snippet && item.snippet.thumbnails ? item.snippet.thumbnails : {};
                     const highResThumb = (thumbs.maxres && thumbs.maxres.url) ||
                                          (thumbs.standard && thumbs.standard.url) ||
                                          (thumbs.high && thumbs.high.url) ||
                                          `https://i.ytimg.com/vi/${item.id}/maxresdefault.jpg`;
 
+                    // For Shorts: use native vertical 1080x1920 (oar2.jpg)
+                    const thumb = isShort ? `https://i.ytimg.com/vi/${item.id}/oar2.jpg` : highResThumb;
+
                     return {
                         id: item.id,
                         title: item.snippet ? item.snippet.title : '',
-                        thumbnail: highResThumb,
+                        thumbnail: thumb,
+                        fallbackThumbnail: highResThumb,
                         durationSec: durationSec,
-                        isShort: durationSec > 0 && durationSec <= 60
+                        isShort: isShort
                     };
                 });
 

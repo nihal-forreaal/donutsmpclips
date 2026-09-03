@@ -265,11 +265,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function buildShortCard(vid) {
-        const thumbUrl = getBestThumb(vid);
+        // Shorts have a native vertical 1080x1920 thumbnail (oar2.jpg)
+        const primaryThumb = vid.thumbnail && vid.thumbnail.includes('oar2') 
+            ? vid.thumbnail 
+            : `https://i.ytimg.com/vi/${vid.id}/oar2.jpg`;
+        const fallbackThumb = `https://i.ytimg.com/vi/${vid.id}/maxresdefault.jpg`;
+        const hq720Thumb    = `https://i.ytimg.com/vi/${vid.id}/hq720.jpg`;
+        const hqThumb       = `https://i.ytimg.com/vi/${vid.id}/hqdefault.jpg`;
+
         return `
             <div class="video-card glass-panel" data-video-id="${vid.id}" data-is-short="true" style="cursor:pointer;text-decoration:none;display:flex;flex-direction:column;">
                 <div class="video-placeholder placeholder-short" style="position:relative;">
-                    <img src="${thumbUrl}" alt="${vid.title}" class="clip-img" loading="lazy" onerror="if(!this.dataset.triedHq){this.dataset.triedHq='true';this.src='https://i.ytimg.com/vi/${vid.id}/hqdefault.jpg';}">
+                    <img src="${primaryThumb}" 
+                         alt="${vid.title}" 
+                         class="clip-img" 
+                         loading="lazy" 
+                         onerror="if(!this.dataset.step){this.dataset.step='1';this.src='${fallbackThumb}';}else if(this.dataset.step==='1'){this.dataset.step='2';this.src='${hq720Thumb}';}else if(this.dataset.step==='2'){this.dataset.step='3';this.src='${hqThumb}';}">
                     ${OVERLAY}
                 </div>
                 <div style="padding:0.8rem;color:var(--text-main);font-weight:700;font-size:0.85rem;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
