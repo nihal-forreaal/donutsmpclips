@@ -29,8 +29,25 @@
                 <li><a href="#editing">Editing</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
+            <!-- Hamburger button (mobile only) -->
+            <button class="hamburger" id="hamburger-btn" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+        <ul class="mobile-nav-links">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#clips">Clips</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#editing">Editing</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </div>
 
     <!-- Hero Section -->
     <section id="hero" class="hero-section">
@@ -138,7 +155,7 @@
                 </div>
             </div>
             <div class="easter-egg-banner text-center" id="easter-egg-banner">
-                <span id="easter-egg-text"><strong>Goal: 1,000 Subscribers</strong> — Unlocks secret party mode!</span>
+                <span id="easter-egg-text"><strong>Help me to hit 1000 subscribers on youtube !!</strong></span>
             </div>
         </div>
     </section>
@@ -186,6 +203,18 @@
 
     <!-- Toast Notification -->
     <div id="toast" class="toast-notification"></div>
+
+    <!-- Video Modal -->
+    <div id="video-modal" class="video-modal" role="dialog" aria-modal="true" aria-label="Video Player">
+        <div class="video-modal-content glass-panel">
+            <button class="modal-close" id="modal-close-btn" aria-label="Close video">&times;</button>
+            <div class="modal-iframe-container">
+                <iframe id="modal-iframe" src="" frameborder="0"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allowfullscreen title="Video Player"></iframe>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

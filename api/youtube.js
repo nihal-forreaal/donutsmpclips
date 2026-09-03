@@ -50,10 +50,16 @@ export default async function handler(req, res) {
             if (detailsData.items) {
                 const allVideos = detailsData.items.map(item => {
                     const durationSec = parseDuration(item.contentDetails ? item.contentDetails.duration : '');
+                    const thumbs = item.snippet && item.snippet.thumbnails ? item.snippet.thumbnails : {};
+                    const highResThumb = (thumbs.maxres && thumbs.maxres.url) ||
+                                         (thumbs.standard && thumbs.standard.url) ||
+                                         (thumbs.high && thumbs.high.url) ||
+                                         `https://i.ytimg.com/vi/${item.id}/maxresdefault.jpg`;
+
                     return {
                         id: item.id,
                         title: item.snippet ? item.snippet.title : '',
-                        thumbnail: item.snippet && item.snippet.thumbnails && item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : (item.snippet && item.snippet.thumbnails && item.snippet.thumbnails.medium ? item.snippet.thumbnails.medium.url : ''),
+                        thumbnail: highResThumb,
                         durationSec: durationSec,
                         isShort: durationSec > 0 && durationSec <= 60
                     };
