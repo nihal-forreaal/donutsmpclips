@@ -11,6 +11,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 2-Step Logo Click Behavior (1st click refreshes, 2nd click redirects to donutsmp.net)
+    const logoElement = document.getElementById('nav-logo') || document.querySelector('.logo');
+    if (logoElement) {
+        logoElement.style.cursor = 'pointer';
+        logoElement.addEventListener('click', (e) => {
+            e.preventDefault();
+            const clickCount = sessionStorage.getItem('logo_click_count');
+            
+            if (clickCount === '1') {
+                sessionStorage.removeItem('logo_click_count');
+                window.location.href = 'https://donutsmp.net';
+            } else {
+                sessionStorage.setItem('logo_click_count', '1');
+                window.location.reload();
+            }
+        });
+    }
+
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
