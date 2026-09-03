@@ -124,7 +124,7 @@
         <div class="container">
             <h2 class="section-title">📊 CHANNEL STATS</h2>
             <div class="stats-grid glass-panel">
-                <div class="stat-item">
+                <div class="stat-item" id="stat-subs-card" style="cursor: pointer;" title="Click 5 times to preview 1K Subs Easter Egg!">
                     <h3 id="stat-subs">23+</h3>
                     <p>Subscribers</p>
                 </div>
@@ -136,6 +136,10 @@
                     <h3 id="stat-clips">7+</h3>
                     <p>Clips</p>
                 </div>
+            </div>
+            <div class="easter-egg-banner text-center" id="easter-egg-banner">
+                <span class="egg-icon">🎁</span>
+                <span id="easter-egg-text"><strong>1,000 Subscribers Goal:</strong> Unlocks a secret celebration Easter Egg & party mode when we hit 1,000 subs! <em>(Tip: Click subscribers 5 times to preview 🎉)</em></span>
             </div>
         </div>
     </section>
@@ -183,16 +187,6 @@
 
     <!-- Toast Notification -->
     <div id="toast" class="toast-notification"></div>
-
-    <!-- Video Modal -->
-    <div class="video-modal" id="video-modal">
-        <div class="video-modal-content glass-panel">
-            <button class="modal-close" id="modal-close">&times;</button>
-            <div class="modal-iframe-container">
-                <iframe id="modal-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-        </div>
-    </div>
 
     <script src="script.js"></script>
 </body>

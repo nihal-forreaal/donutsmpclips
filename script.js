@@ -47,27 +47,78 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Video Modal System
-    const videoModal = document.getElementById('video-modal');
-    const modalIframe = document.getElementById('modal-iframe');
-    const modalClose = document.getElementById('modal-close');
+    // Confetti Particle System for 1,000 Subs Easter Egg
+    function triggerConfetti() {
+        const canvas = document.createElement('canvas');
+        canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;';
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-    function openModal(videoId) {
-        if (!videoModal || !modalIframe) return;
-        modalIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-        videoModal.classList.add('active');
+        const particles = [];
+        const colors = ['#0077ff', '#00ff88', '#ff0000', '#ffd700', '#ff00ff'];
+
+        for (let i = 0; i < 150; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                size: Math.random() * 8 + 4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                speedY: Math.random() * 6 + 3,
+                speedX: Math.random() * 4 - 2,
+                rotation: Math.random() * 360
+            });
+        }
+
+        let frame = 0;
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.y += p.speedY;
+                p.x += p.speedX;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            });
+            frame++;
+            if (frame < 260) {
+                requestAnimationFrame(render);
+            } else {
+                canvas.remove();
+            }
+        }
+        render();
     }
 
-    function closeModal() {
-        if (!videoModal || !modalIframe) return;
-        videoModal.classList.remove('active');
-        modalIframe.src = '';
+    // 1,000 Subs Easter Egg Handler
+    function unlockEasterEgg(isPreview = false) {
+        const banner = document.getElementById('easter-egg-banner');
+        const text = document.getElementById('easter-egg-text');
+        
+        triggerConfetti();
+        
+        if (banner) {
+            banner.classList.add('unlocked');
+        }
+        if (text) {
+            text.innerHTML = isPreview 
+                ? '🎉 <strong>1,000 SUBS EASTER EGG UNLOCKED (PREVIEW MODE)!</strong> Thank you for supporting DonutSMP Clips! 🚀🍩' 
+                : '🏆 <strong>1,000 SUBSCRIBERS MILESTONE REACHED!</strong> Celebration Easter Egg Unlocked! Thank you everyone! 🍩🎉';
+        }
     }
 
-    if (modalClose) modalClose.addEventListener('click', closeModal);
-    if (videoModal) {
-        videoModal.addEventListener('click', (e) => {
-            if (e.target === videoModal) closeModal();
+    // Secret Cheat Code: Click Subscribers 5 Times to Trigger 1,000 Subs Easter Egg Preview
+    const statSubsCard = document.getElementById('stat-subs-card');
+    let subClickCount = 0;
+    if (statSubsCard) {
+        statSubsCard.addEventListener('click', () => {
+            subClickCount++;
+            if (subClickCount >= 5) {
+                subClickCount = 0;
+                unlockEasterEgg(true);
+            } else {
+                showToast(`🎉 Click ${5 - subClickCount} more times to unlock 1,000 Subs Easter Egg!`);
+            }
         });
     }
 
@@ -173,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return n.toLocaleString() + '+';
             };
 
-            // Update Stats with counting animation
+            // Update Stats with counting animation & Easter Egg check
             if (data.stats) {
                 const subEl = document.getElementById('stat-subs');
                 const viewEl = document.getElementById('stat-views');
@@ -182,6 +233,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (subEl) animateCount(subEl, data.stats.subscriberCount);
                 if (viewEl) animateCount(viewEl, data.stats.viewCount);
                 if (clipEl) animateCount(clipEl, data.stats.videoCount);
+
+                // Auto unlock Easter Egg if subscribers hit 1000!
+                if (parseInt(data.stats.subscriberCount, 10) >= 1000) {
+                    unlockEasterEgg(false);
+                }
             }
 
             // Update Latest Clip
@@ -190,12 +246,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const latestThumb = document.getElementById('latest-thumbnail');
                 const latestLink = document.getElementById('latest-link');
                 const latestCard = document.getElementById('latest-clip-card');
+                const videoUrl = `https://www.youtube.com/watch?v=${latest.id}`;
 
                 if (latestCard) {
-                    latestCard.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        openModal(latest.id);
-                    });
+                    latestCard.href = videoUrl;
+                    latestCard.target = '_blank';
                 }
 
                 if (latestThumb) {
@@ -207,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
                 if (latestLink) {
-                    latestLink.innerText = `${latest.title || 'Watch Clip'} ▶`;
+                    latestLink.innerText = `${latest.title || 'Watch Clip'} →`;
                 }
             }
 
@@ -216,22 +271,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gridVideos && data.longForm && data.longForm.length > 0) {
                 gridVideos.innerHTML = '';
                 data.longForm.slice(0, 3).forEach(vid => {
-                    const card = document.createElement('div');
-                    card.className = 'video-card glass-panel';
-                    card.style.cssText = 'cursor: pointer; display: flex; flex-direction: column;';
-                    card.innerHTML = `
-                        <div class="video-placeholder placeholder-video" style="position: relative;">
-                            <img src="${vid.thumbnail}" alt="${vid.title}" style="width: 100%; height: 100%; object-fit: cover;">
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center;">
-                                <svg viewBox="0 0 24 24" fill="currentColor" style="width: 44px; height: 44px; color: var(--primary); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));"><path d="M8 5v14l11-7z"/></svg>
+                    gridVideos.innerHTML += `
+                        <a href="https://www.youtube.com/watch?v=${vid.id}" target="_blank" class="video-card glass-panel" style="text-decoration: none; display: flex; flex-direction: column;">
+                            <div class="video-placeholder placeholder-video" style="position: relative;">
+                                <img src="${vid.thumbnail}" alt="${vid.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center;">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" style="width: 44px; height: 44px; color: var(--primary); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
                             </div>
-                        </div>
-                        <div style="padding: 1rem; color: var(--text-main); font-weight: 700; font-size: 0.95rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            ${vid.title}
-                        </div>
+                            <div style="padding: 1rem; color: var(--text-main); font-weight: 700; font-size: 0.95rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                ${vid.title}
+                            </div>
+                        </a>
                     `;
-                    card.addEventListener('click', () => openModal(vid.id));
-                    gridVideos.appendChild(card);
                 });
             }
 
@@ -240,22 +292,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gridShorts && data.shorts && data.shorts.length > 0) {
                 gridShorts.innerHTML = '';
                 data.shorts.slice(0, 4).forEach(vid => {
-                    const card = document.createElement('div');
-                    card.className = 'video-card glass-panel';
-                    card.style.cssText = 'cursor: pointer; display: flex; flex-direction: column;';
-                    card.innerHTML = `
-                        <div class="video-placeholder placeholder-short" style="position: relative;">
-                            <img src="${vid.thumbnail}" alt="${vid.title}" style="width: 100%; height: 100%; object-fit: cover;">
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center;">
-                                <svg viewBox="0 0 24 24" fill="currentColor" style="width: 44px; height: 44px; color: var(--primary); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));"><path d="M8 5v14l11-7z"/></svg>
+                    gridShorts.innerHTML += `
+                        <a href="https://www.youtube.com/shorts/${vid.id}" target="_blank" class="video-card glass-panel" style="text-decoration: none; display: flex; flex-direction: column;">
+                            <div class="video-placeholder placeholder-short" style="position: relative;">
+                                <img src="${vid.thumbnail}" alt="${vid.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center;">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" style="width: 44px; height: 44px; color: var(--primary); filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
                             </div>
-                        </div>
-                        <div style="padding: 0.8rem; color: var(--text-main); font-weight: 700; font-size: 0.85rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            ${vid.title}
-                        </div>
+                            <div style="padding: 0.8rem; color: var(--text-main); font-weight: 700; font-size: 0.85rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                ${vid.title}
+                            </div>
+                        </a>
                     `;
-                    card.addEventListener('click', () => openModal(vid.id));
-                    gridShorts.appendChild(card);
                 });
             }
 
