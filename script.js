@@ -129,6 +129,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const latest = data.latest;
                 const latestThumb = document.getElementById('latest-thumbnail');
                 const latestLink = document.getElementById('latest-link');
+                const latestCard = document.getElementById('latest-clip-card');
+                const videoUrl = `https://www.youtube.com/watch?v=${latest.id}`;
+
+                if (latestCard) {
+                    latestCard.href = videoUrl;
+                    latestCard.target = '_blank';
+                }
 
                 if (latestThumb) {
                     latestThumb.innerHTML = `
@@ -139,9 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
                 if (latestLink) {
-                    latestLink.href = `https://www.youtube.com/watch?v=${latest.id}`;
                     latestLink.innerText = `${latest.title || 'Watch Clip'} →`;
-                    latestLink.target = '_blank';
                 }
             }
 
