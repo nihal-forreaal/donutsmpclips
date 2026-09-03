@@ -240,8 +240,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // VIDEO CARD BUILDERS  (High-Quality Thumbnails + Fallback)
     // ==========================================
-    const PLAY_ICON = `<svg viewBox="0 0 24 24" fill="currentColor" style="width:44px;height:44px;color:var(--primary);filter:drop-shadow(0 2px 8px rgba(0,0,0,0.5));"><path d="M8 5v14l11-7z"/></svg>`;
-    const OVERLAY   = `<div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;">${PLAY_ICON}</div>`;
+    // Modern Redesigned Play Button Component
+    const PLAY_ICON_PATH = 'M8.5 5.75C8.5 4.96 9.38 4.47 10.05 4.88L19.25 10.63C19.89 11.03 19.89 11.97 19.25 12.37L10.05 18.12C9.38 18.53 8.5 18.04 8.5 17.25V5.75Z';
+    const PLAY_BTN = `
+        <div class="play-btn-wrapper">
+            <div class="play-btn-glow"></div>
+            <div class="play-btn-disc">
+                <svg viewBox="0 0 24 24" class="play-btn-icon" fill="currentColor"><path d="${PLAY_ICON_PATH}"/></svg>
+            </div>
+        </div>`;
+    const PLAY_BTN_LG = `
+        <div class="play-btn-wrapper play-btn-lg">
+            <div class="play-btn-glow"></div>
+            <div class="play-btn-disc">
+                <svg viewBox="0 0 24 24" class="play-btn-icon" fill="currentColor"><path d="${PLAY_ICON_PATH}"/></svg>
+            </div>
+        </div>`;
+    const OVERLAY = `<div style="position:absolute;inset:0;background:rgba(0,0,0,0.22);display:flex;align-items:center;justify-content:center;">${PLAY_BTN}</div>`;
 
     function getBestThumb(vid) {
         if (vid.thumbnail && (vid.thumbnail.includes('maxres') || vid.thumbnail.includes('sddefault'))) {
@@ -338,8 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (latestThumb) {
                     latestThumb.innerHTML = `
                         <img src="${thumbUrl}" alt="${latest.title}" class="clip-img" loading="eager" onerror="if(!this.dataset.triedHq){this.dataset.triedHq='true';this.src='https://i.ytimg.com/vi/${latest.id}/hqdefault.jpg';}">
-                        <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
-                            <svg viewBox="0 0 24 24" fill="currentColor" style="width:65px;height:65px;color:var(--primary);filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));"><path d="M8 5v14l11-7z"/></svg>
+                        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.22);display:flex;align-items:center;justify-content:center;">
+                            ${PLAY_BTN_LG}
                         </div>`;
                 }
                 if (latestLink) latestLink.innerText = `${latest.title || 'Watch Clip'} →`;
