@@ -136,16 +136,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
+    // 1,000 SUBSCRIBERS PROGRESS BAR
+    // ==========================================
+    const progressFill  = document.getElementById('sub-progress-fill');
+    const goalSubsCount = document.getElementById('goal-current-subs');
+    const goalPercent   = document.getElementById('sub-goal-percent');
+    let currentSubscribers = 23; // default fallback
+
+    function updateSubProgressBar(count, target = 1000) {
+        const numCount = parseInt(String(count).replace(/[^0-9]/g, ''), 10) || 0;
+        currentSubscribers = numCount;
+        const percent = Math.min(Math.max((numCount / target) * 100, 0), 100);
+
+        if (progressFill) {
+            // Visual minimum width so even small numbers have a visible starting bar
+            const displayPercent = numCount > 0 ? Math.max(percent, 2.5) : 0;
+            progressFill.style.width = `${displayPercent}%`;
+        }
+        if (goalSubsCount) {
+            goalSubsCount.innerText = numCount.toLocaleString();
+        }
+        if (goalPercent) {
+            goalPercent.innerText = `${percent.toFixed(1)}%`;
+        }
+    }
+
+    // Initialize progress bar
+    updateSubProgressBar(23, 1000);
+
+    // ==========================================
     // EASTER EGG: 1,000 SUBS
     // ==========================================
     function unlockEasterEgg(isPreview = false) {
+        const card   = document.getElementById('sub-goal-card');
         const banner = document.getElementById('easter-egg-banner');
         const text   = document.getElementById('easter-egg-text');
         triggerConfetti();
+        if (card) card.classList.add('unlocked');
         if (banner) banner.classList.add('unlocked');
+        if (progressFill) progressFill.style.width = '100%';
+        if (goalSubsCount) goalSubsCount.innerText = '1,000+';
+        if (goalPercent) goalPercent.innerText = '100%';
         if (text) {
             text.innerHTML = isPreview
-                ? '🎉 <strong>Help me to hit 1000 subcribers on youtube !!</strong> Thank you for supporting DonutSMP Clips! 🚀🍩'
+                ? '🎉 <strong>Help me to hit 1,000 subscribers on YouTube!</strong> Thank you for supporting DonutSMP Clips! 🚀🍩'
                 : '🏆 <strong>1,000 SUBSCRIBERS MILESTONE REACHED!</strong> Thank you everyone for helping hit 1,000 subscribers! 🍩🎉';
         }
     }
@@ -227,12 +261,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         animateCount(h3, h3.innerText);
                     }
                 }
+                if (entry.target.classList.contains('sub-goal-card')) {
+                    updateSubProgressBar(currentSubscribers, 1000);
+                }
                 observer.unobserve(entry.target);
             }
         });
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-    document.querySelectorAll('section, .video-card, .latest-clip-card, .stat-item, .contact-card').forEach(el => {
+    document.querySelectorAll('section, .video-card, .latest-clip-card, .stat-item, .contact-card, .sub-goal-card').forEach(el => {
         el.classList.add('animate-hidden');
         observer.observe(el);
     });
@@ -332,6 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (subEl)  animateCount(subEl,  data.stats.subscriberCount);
                 if (viewEl) animateCount(viewEl, data.stats.viewCount);
                 if (clipEl) animateCount(clipEl, data.stats.videoCount);
+                updateSubProgressBar(data.stats.subscriberCount, 1000);
                 if (parseInt(data.stats.subscriberCount, 10) >= 1000) unlockEasterEgg(false);
             }
 

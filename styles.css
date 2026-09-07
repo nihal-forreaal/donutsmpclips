@@ -884,19 +884,336 @@ footer p {
     height: 100%;
 }
 
-.easter-egg-banner {
-    margin-top: 2rem;
-    padding: 1rem 2rem;
-    background: rgba(0, 119, 255, 0.1);
-    border: 1px solid rgba(0, 119, 255, 0.3);
-    border-radius: 50px;
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    max-width: 850px;
+/* 1,000 Subscribers Goal Progress Bar Component */
+.sub-goal-card {
+    margin-top: 3rem;
+    padding: 2.25rem 2.75rem;
+    border-radius: 24px;
+    max-width: 960px;
     margin-left: auto;
     margin-right: auto;
-    backdrop-filter: blur(10px);
+    background: linear-gradient(180deg, rgba(16, 22, 34, 0.85) 0%, rgba(10, 14, 24, 0.95) 100%);
+    border: 1px solid rgba(0, 119, 255, 0.25);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.sub-goal-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 0%, rgba(0, 119, 255, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.sub-goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    position: relative;
+    z-index: 1;
+}
+
+.sub-goal-title-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.sub-goal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 119, 255, 0.15);
+    border: 1px solid rgba(0, 119, 255, 0.4);
+    padding: 0.35rem 0.85rem;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #4dabf7;
+    text-transform: uppercase;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #00ff88;
+    box-shadow: 0 0 10px #00ff88;
+    animation: liveBlink 1.6s infinite ease-in-out;
+}
+
+@keyframes liveBlink {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.85); }
+}
+
+.sub-goal-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+    font-weight: 400;
+}
+
+.sub-goal-stats {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.sub-counts-box {
+    display: flex;
+    align-items: baseline;
+    font-family: 'Outfit', sans-serif;
+}
+
+.sub-current {
+    font-size: 2.2rem;
+    color: #ffffff;
+    font-weight: 900;
+    text-shadow: 0 0 15px rgba(0, 119, 255, 0.5);
+}
+
+.sub-divider {
+    color: rgba(255, 255, 255, 0.35);
+    margin: 0 0.35rem;
+    font-size: 1.5rem;
+}
+
+.sub-target {
+    color: #4dabf7;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+}
+
+.sub-percent-badge {
+    background: linear-gradient(135deg, rgba(0, 119, 255, 0.25) 0%, rgba(0, 220, 255, 0.25) 100%);
+    border: 1.5px solid rgba(0, 220, 255, 0.45);
+    color: #00d4ff;
+    padding: 0.4rem 1rem;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(0, 119, 255, 0.25);
     transition: all 0.3s ease;
+}
+
+/* Progress Track & Fill */
+.sub-progress-container {
+    position: relative;
+    margin-bottom: 2.4rem;
+    padding-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.sub-progress-track {
+    width: 100%;
+    height: 26px;
+    background: rgba(5, 8, 15, 0.85);
+    border-radius: 50px;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 119, 255, 0.1);
+}
+
+.sub-progress-fill {
+    height: 100%;
+    min-width: 12px;
+    border-radius: 50px;
+    background: linear-gradient(90deg, #0077ff 0%, #00c6ff 55%, #00ff88 100%);
+    position: relative;
+    transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 20px rgba(0, 198, 255, 0.6);
+}
+
+.sub-progress-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 50px;
+    background: radial-gradient(circle at 100% 50%, rgba(255, 255, 255, 0.6) 0%, transparent 60%);
+    opacity: 0.7;
+}
+
+.sub-progress-shimmer {
+    position: absolute;
+    inset: 0;
+    border-radius: 50px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.35) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: barShimmer 2.2s infinite linear;
+}
+
+@keyframes barShimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.sub-progress-pin {
+    position: absolute;
+    right: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.95), 0 0 16px 4px #00ff88;
+}
+
+/* Milestones */
+.sub-milestones {
+    position: absolute;
+    width: 100%;
+    top: 30px;
+    left: 0;
+    height: 24px;
+    pointer-events: none;
+}
+
+.milestone-step {
+    position: absolute;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.milestone-step:first-child {
+    transform: translateX(0);
+    align-items: flex-start;
+}
+
+.milestone-step:last-child {
+    transform: translateX(-100%);
+    align-items: flex-end;
+}
+
+.milestone-tick {
+    width: 2px;
+    height: 7px;
+    background: rgba(255, 255, 255, 0.25);
+    margin-bottom: 5px;
+    border-radius: 1px;
+}
+
+.milestone-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    white-space: nowrap;
+    font-family: 'Outfit', sans-serif;
+}
+
+.milestone-step-goal .milestone-label {
+    color: #ffd700;
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+    font-weight: 800;
+}
+
+.milestone-step-goal .milestone-tick {
+    background: #ffd700;
+    height: 9px;
+}
+
+/* Footer & CTA */
+.sub-goal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    z-index: 1;
+}
+
+.easter-egg-banner {
+    margin: 0;
+    padding: 0.75rem 1.4rem;
+    background: rgba(0, 119, 255, 0.08);
+    border: 1px solid rgba(0, 119, 255, 0.25);
+    border-radius: 50px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.4s ease;
+    text-align: left;
+}
+
+.easter-egg-banner strong {
+    color: #4dabf7;
+}
+
+.sub-subscribe-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--youtube);
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.8rem 1.8rem;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 0.92rem;
+    letter-spacing: 0.8px;
+    box-shadow: 0 4px 18px rgba(255, 0, 0, 0.4);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    white-space: nowrap;
+}
+
+.sub-subscribe-btn:hover {
+    background: #ff2020;
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 25px rgba(255, 0, 0, 0.6);
+}
+
+.sub-subscribe-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Unlocked 1,000 Subs Victory State */
+.sub-goal-card.unlocked {
+    border-color: rgba(255, 215, 0, 0.65);
+    box-shadow: 0 20px 60px rgba(255, 215, 0, 0.25), inset 0 0 30px rgba(255, 215, 0, 0.12);
+    animation: pulseGoldCard 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes pulseGoldCard {
+    0% { border-color: rgba(255, 215, 0, 0.5); box-shadow: 0 20px 60px rgba(255, 215, 0, 0.2); }
+    100% { border-color: rgba(255, 215, 0, 0.9); box-shadow: 0 25px 75px rgba(255, 215, 0, 0.4); }
+}
+
+.sub-goal-card.unlocked .sub-progress-fill {
+    background: linear-gradient(90deg, #ff9900 0%, #ffd700 50%, #fffb8f 100%);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.95);
+}
+
+.sub-goal-card.unlocked .sub-percent-badge {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.35) 0%, rgba(255, 170, 0, 0.35) 100%);
+    border-color: #ffd700;
+    color: #ffd700;
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+}
+
+.sub-goal-card.unlocked .sub-current {
+    color: #ffd700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
 }
 
 .easter-egg-banner.unlocked {
@@ -904,11 +1221,51 @@ footer p {
     border-color: #ffd700;
     color: #fff;
     font-weight: 700;
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-    animation: pulseGold 2s infinite alternate;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
 }
 
-@keyframes pulseGold {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.02); }
+.easter-egg-banner.unlocked strong {
+    color: #ffd700;
 }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sub-goal-card {
+        padding: 1.75rem 1.5rem;
+    }
+    .sub-goal-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .sub-goal-stats {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .sub-goal-footer {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    .easter-egg-banner {
+        text-align: center;
+    }
+    .sub-subscribe-btn {
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .milestone-step:nth-child(2),
+    .milestone-step:nth-child(4) {
+        display: none;
+    }
+    .sub-current {
+        font-size: 1.8rem;
+    }
+    .sub-target {
+        font-size: 1rem;
+    }
+}
+
