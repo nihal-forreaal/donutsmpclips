@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSubscribers = 23; // default fallback
 
     function updateSubProgressBar(count, target = 1000) {
-        const numCount = parseInt(String(count).replace(/[^0-9]/g, ''), 10) || 0;
+        const numCount = parseStatValue(count);
         currentSubscribers = numCount;
         const percent = Math.min(Math.max((numCount / target) * 100, 0), 100);
 
@@ -212,12 +212,54 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-    // COUNTER ANIMATION
+    // COUNTER ANIMATION & STAT PARSER
     // ==========================================
+    function parseStatValue(val) {
+        if (typeof val === 'number') return val;
+        if (!val) return 0;
+        const str = String(val).trim();
+        
+        // Handle Millions (e.g. 1.5M+, 2M)
+        const mMatch = str.match(/([\d.]+)\s*M/i);
+        if (mMatch) return Math.round(parseFloat(mMatch[1]) * 1000000);
+        
+        // Handle Thousands (e.g. 1.5K+, 1K)
+        const kMatch = str.match(/([\d.]+)\s*K/i);
+        if (kMatch) return Math.round(parseFloat(kMatch[1]) * 1000);
+        
+        // Standard integer / fallback
+        const num = parseInt(str.replace(/[^0-9]/g, ''), 10);
+        return isNaN(num) ? 0 : num;
+    }
+
+    function formatStatValue(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M+';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K+';
+        } else {
+            return num.toLocaleString() + '+';
+        }
+    }
+
     function animateCount(element, targetVal, duration = 1200) {
         if (!element) return;
-        const numericTarget = parseInt(String(targetVal).replace(/[^0-9]/g, ''), 10);
-        if (isNaN(numericTarget) || numericTarget === 0) { element.innerText = targetVal; return; }
+        
+        let numericTarget = 0;
+        if (targetVal !== undefined && targetVal !== null && targetVal !== element.innerText) {
+            numericTarget = parseStatValue(targetVal);
+            element.dataset.rawValue = numericTarget;
+        } else if (element.dataset.rawValue) {
+            numericTarget = parseInt(element.dataset.rawValue, 10);
+        } else {
+            numericTarget = parseStatValue(element.innerText);
+            element.dataset.rawValue = numericTarget;
+        }
+
+        if (isNaN(numericTarget) || numericTarget === 0) { 
+            element.innerText = targetVal || element.innerText || '0+'; 
+            return; 
+        }
 
         const startTime = performance.now();
         function updateCount(currentTime) {
@@ -225,21 +267,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const easeOut   = 1 - Math.pow(1 - progress, 3);
             const currentVal = Math.floor(easeOut * numericTarget);
 
-            let formatted = currentVal.toLocaleString();
-            if (numericTarget >= 1000000) formatted = (currentVal / 1000000).toFixed(1) + 'M';
-            else if (numericTarget >= 1000) formatted = (currentVal / 1000).toFixed(0) + 'K';
-
-            element.innerText = formatted + '+';
+            element.innerText = formatStatValue(currentVal);
 
             if (progress < 1) {
                 requestAnimationFrame(updateCount);
             } else {
-                const final = numericTarget >= 1000000
-                    ? (numericTarget / 1000000).toFixed(1) + 'M+'
-                    : numericTarget >= 1000
-                        ? (numericTarget / 1000).toFixed(0) + 'K+'
-                        : numericTarget.toLocaleString() + '+';
-                element.innerText = final;
+                element.innerText = formatStatValue(numericTarget);
                 element.classList.add('stat-pop');
                 setTimeout(() => element.classList.remove('stat-pop'), 400);
             }

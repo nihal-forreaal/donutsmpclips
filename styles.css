@@ -731,12 +731,25 @@ footer p {
     color: var(--text-muted);
     transition: all 0.3s ease;
     user-select: none;
+    cursor: pointer;
 }
 
 .server-ip-box:hover {
     border-color: var(--primary);
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(0, 119, 255, 0.25);
+}
+
+/* Scroll-reveal animations */
+.animate-hidden {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.animate-in {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .online-indicator {
