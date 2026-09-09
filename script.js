@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressFill  = document.getElementById('sub-progress-fill');
     const goalSubsCount = document.getElementById('goal-current-subs');
     const goalPercent   = document.getElementById('sub-goal-percent');
-    let currentSubscribers = 23; // default fallback
+    let currentSubscribers = 29; // default fallback
 
     function updateSubProgressBar(count, target = 1000) {
         const numCount = parseStatValue(count);
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initialize progress bar
-    updateSubProgressBar(23, 1000);
+    updateSubProgressBar(29, 1000);
 
     // ==========================================
     // EASTER EGG: 1,000 SUBS

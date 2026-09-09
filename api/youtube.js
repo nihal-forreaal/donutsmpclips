@@ -7,33 +7,54 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 
     try {
-        // Fetch Channel Stats
-        const statsUrl = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`;
+        // Fetch Channel Stats & Uploads Playlist
+        const statsUrl = `https://www.googleapis.com/youtube/v3/channels?part=statistics,contentDetails&id=${CHANNEL_ID}&key=${API_KEY}`;
         const statsRes = await fetch(statsUrl);
         const statsData = await statsRes.json();
         
         let stats = {
-            subscriberCount: "23",
-            viewCount: "687",
-            videoCount: "7"
+            subscriberCount: "29",
+            viewCount: "3500",
+            videoCount: "9"
         };
 
+        let uploadsPlaylistId = 'UU' + CHANNEL_ID.substring(2);
         if (statsData.items && statsData.items.length > 0) {
             stats = statsData.items[0].statistics;
+            if (statsData.items[0].contentDetails && statsData.items[0].contentDetails.relatedPlaylists && statsData.items[0].contentDetails.relatedPlaylists.uploads) {
+                uploadsPlaylistId = statsData.items[0].contentDetails.relatedPlaylists.uploads;
+            }
         }
 
-        // Fetch Video Details (to get duration & categorize Shorts vs Long Form)
-        const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=15&order=date&type=video&key=${API_KEY}`;
-        const searchRes = await fetch(searchUrl);
-        const searchData = await searchRes.json();
+        // Fetch Uploaded Videos (playlistItems is 100x cheaper than search & gets exact upload order)
+        let videoIds = [];
+        try {
+            const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=${uploadsPlaylistId}&maxResults=30&key=${API_KEY}`;
+            const playlistRes = await fetch(playlistUrl);
+            const playlistData = await playlistRes.json();
+            if (playlistData.items && playlistData.items.length > 0) {
+                videoIds = playlistData.items.map(i => i.contentDetails.videoId);
+            }
+        } catch (e) {
+            console.error("Playlist fetch failed, falling back to search", e);
+        }
+
+        // Fallback to search if playlistItems failed
+        if (videoIds.length === 0) {
+            const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=15&order=date&type=video&key=${API_KEY}`;
+            const searchRes = await fetch(searchUrl);
+            const searchData = await searchRes.json();
+            if (searchData.items) {
+                videoIds = searchData.items.map(i => i.id.videoId).filter(Boolean);
+            }
+        }
         
         let longForm = [];
         let shorts = [];
         let latest = null;
 
-        if (searchData.items && searchData.items.length > 0) {
-            const videoIds = searchData.items.map(i => i.id.videoId).join(',');
-            const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,snippet&id=${videoIds}&key=${API_KEY}`;
+        if (videoIds.length > 0) {
+            const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,snippet,statistics&id=${videoIds.join(',')}&key=${API_KEY}`;
             const detailsRes = await fetch(detailsUrl);
             const detailsData = await detailsRes.json();
 
@@ -48,6 +69,8 @@ export default async function handler(req, res) {
             };
 
             if (detailsData.items) {
+                let totalVideoViews = 0;
+
                 const allVideos = detailsData.items.map(item => {
                     const durationSec = parseDuration(item.contentDetails ? item.contentDetails.duration : '');
                     const isShort = durationSec > 0 && durationSec <= 180;
@@ -59,6 +82,8 @@ export default async function handler(req, res) {
 
                     // For Shorts: use native vertical 1080x1920 (oar2.jpg)
                     const thumb = isShort ? `https://i.ytimg.com/vi/${item.id}/oar2.jpg` : highResThumb;
+                    const views = parseInt(item.statistics ? item.statistics.viewCount : '0', 10) || 0;
+                    totalVideoViews += views;
 
                     return {
                         id: item.id,
@@ -66,9 +91,15 @@ export default async function handler(req, res) {
                         thumbnail: thumb,
                         fallbackThumbnail: highResThumb,
                         durationSec: durationSec,
-                        isShort: isShort
+                        isShort: isShort,
+                        views: views
                     };
                 });
+
+                // YouTube channels.statistics.viewCount lags behind Studio by days/weeks.
+                // Calculating the sum of actual video views gives the real-time accurate view count matching YouTube Studio!
+                const channelViewCount = parseInt(stats.viewCount || '0', 10);
+                stats.viewCount = String(Math.max(channelViewCount, totalVideoViews));
 
                 if (allVideos.length > 0) {
                     latest = allVideos[0];
