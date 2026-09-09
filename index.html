@@ -311,10 +311,17 @@
                         <p class="music-tag">COMMUNITY TRACK</p>
                         <h3>Wizox Ban This Guy</h3>
                         <p>Flosvn (flosik) · Made for Wizox</p>
-                        <audio controls preload="metadata" aria-label="Play Wizox Ban This Guy, a community song for Wizox">
-                            <source src="assets/wizox-ban-this-guy.mp3" type="audio/mpeg">
-                            Your browser does not support audio playback.
-                        </audio>
+                        <div class="custom-audio-player" data-audio-player>
+                            <button class="audio-play-button" type="button" aria-label="Play Wizox Ban This Guy">▶</button>
+                            <div class="audio-progress-wrap">
+                                <div class="audio-times"><span data-current-time>0:00</span><span data-duration>0:00</span></div>
+                                <input class="audio-progress" data-audio-progress type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek through Wizox Ban This Guy">
+                            </div>
+                            <button class="audio-mute-button" type="button" aria-label="Mute track">🔊</button>
+                            <audio preload="metadata" aria-label="Wizox Ban This Guy, a community song for Wizox">
+                                <source src="assets/wizox-ban-this-guy.mp3" type="audio/mpeg">
+                            </audio>
+                        </div>
                     </div>
                 </article>
                 <article class="music-card glass-panel" data-music-card>
@@ -326,10 +333,17 @@
                         <p class="music-tag">OFFICIAL MUSIC VIDEO</p>
                         <h3>Farex Pull My Pearl</h3>
                         <p>DrDonut Clips</p>
-                        <audio controls preload="metadata" aria-label="Play Farex Pull My Pearl by DrDonut Clips">
-                            <source src="assets/farex-pull-my-pearl.mp3" type="audio/mpeg">
-                            Your browser does not support audio playback.
-                        </audio>
+                        <div class="custom-audio-player" data-audio-player>
+                            <button class="audio-play-button" type="button" aria-label="Play Farex Pull My Pearl">▶</button>
+                            <div class="audio-progress-wrap">
+                                <div class="audio-times"><span data-current-time>0:00</span><span data-duration>0:00</span></div>
+                                <input class="audio-progress" data-audio-progress type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek through Farex Pull My Pearl">
+                            </div>
+                            <button class="audio-mute-button" type="button" aria-label="Mute track">🔊</button>
+                            <audio preload="metadata" aria-label="Farex Pull My Pearl by DrDonut Clips">
+                                <source src="assets/farex-pull-my-pearl.mp3" type="audio/mpeg">
+                            </audio>
+                        </div>
                     </div>
                 </article>
             </div>

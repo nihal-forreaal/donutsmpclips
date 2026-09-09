@@ -50,23 +50,81 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // COMMUNITY MUSIC PLAYERS
     // ==========================================
-    const musicPlayers = document.querySelectorAll('[data-music-card] audio');
-    musicPlayers.forEach(player => {
-        const card = player.closest('[data-music-card]');
-        if (!card) return;
+    const audioPlayerUIs = document.querySelectorAll('[data-audio-player]');
+    const musicPlayers = Array.from(audioPlayerUIs).map(playerUI => playerUI.querySelector('audio')).filter(Boolean);
 
+    const formatAudioTime = seconds => {
+        if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60).toString().padStart(2, '0');
+        return `${minutes}:${remainingSeconds}`;
+    };
+
+    audioPlayerUIs.forEach(playerUI => {
+        const player = playerUI.querySelector('audio');
+        const card = playerUI.closest('[data-music-card]');
+        const playButton = playerUI.querySelector('.audio-play-button');
+        const muteButton = playerUI.querySelector('.audio-mute-button');
+        const progress = playerUI.querySelector('[data-audio-progress]');
+        const currentTime = playerUI.querySelector('[data-current-time]');
+        const duration = playerUI.querySelector('[data-duration]');
+        if (!player || !card || !playButton || !muteButton || !progress || !currentTime || !duration) return;
+
+        const updateProgress = () => {
+            const percent = player.duration ? (player.currentTime / player.duration) * 100 : 0;
+            progress.value = percent;
+            progress.style.setProperty('--progress', `${percent}%`);
+            currentTime.textContent = formatAudioTime(player.currentTime);
+        };
+
+        const setPlayingState = isPlaying => {
+            card.classList.toggle('is-playing', isPlaying);
+            playButton.textContent = isPlaying ? '❚❚' : '▶';
+            playButton.setAttribute('aria-label', `${isPlaying ? 'Pause' : 'Play'} ${player.getAttribute('aria-label') || 'track'}`);
+            playButton.classList.toggle('is-paused-icon', isPlaying);
+        };
+
+        playButton.addEventListener('click', () => {
+            if (player.paused) player.play();
+            else player.pause();
+        });
+
+        muteButton.addEventListener('click', () => {
+            player.muted = !player.muted;
+        });
+
+        progress.addEventListener('input', () => {
+            if (!player.duration) return;
+            player.currentTime = (Number(progress.value) / 100) * player.duration;
+            updateProgress();
+        });
+
+        player.addEventListener('loadedmetadata', () => {
+            duration.textContent = formatAudioTime(player.duration);
+            updateProgress();
+        });
+        player.addEventListener('durationchange', () => {
+            duration.textContent = formatAudioTime(player.duration);
+        });
+        player.addEventListener('timeupdate', updateProgress);
         player.addEventListener('play', () => {
             musicPlayers.forEach(otherPlayer => {
                 if (otherPlayer !== player && !otherPlayer.paused) otherPlayer.pause();
             });
-            document.querySelectorAll('[data-music-card]').forEach(otherCard => {
-                otherCard.classList.remove('is-playing');
-            });
-            card.classList.add('is-playing');
+            document.querySelectorAll('[data-music-card]').forEach(otherCard => otherCard.classList.remove('is-playing'));
+            setPlayingState(true);
         });
-
-        player.addEventListener('pause', () => card.classList.remove('is-playing'));
-        player.addEventListener('ended', () => card.classList.remove('is-playing'));
+        player.addEventListener('pause', () => setPlayingState(false));
+        player.addEventListener('ended', () => {
+            setPlayingState(false);
+            player.currentTime = 0;
+            updateProgress();
+        });
+        player.addEventListener('volumechange', () => {
+            const isMuted = player.muted || player.volume === 0;
+            muteButton.textContent = isMuted ? '🔇' : '🔊';
+            muteButton.setAttribute('aria-label', isMuted ? 'Unmute track' : 'Mute track');
+        });
     });
 
     // ==========================================
