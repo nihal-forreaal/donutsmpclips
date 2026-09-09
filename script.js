@@ -48,6 +48,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
+    // COMMUNITY MUSIC PLAYERS
+    // ==========================================
+    const musicPlayers = document.querySelectorAll('[data-music-card] audio');
+    musicPlayers.forEach(player => {
+        const card = player.closest('[data-music-card]');
+        if (!card) return;
+
+        player.addEventListener('play', () => {
+            musicPlayers.forEach(otherPlayer => {
+                if (otherPlayer !== player && !otherPlayer.paused) otherPlayer.pause();
+            });
+            document.querySelectorAll('[data-music-card]').forEach(otherCard => {
+                otherCard.classList.remove('is-playing');
+            });
+            card.classList.add('is-playing');
+        });
+
+        player.addEventListener('pause', () => card.classList.remove('is-playing'));
+        player.addEventListener('ended', () => card.classList.remove('is-playing'));
+    });
+
+    // ==========================================
     // HAMBURGER MENU
     // ==========================================
     const hamburgerBtn = document.getElementById('hamburger-btn');
